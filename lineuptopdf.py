@@ -73,6 +73,13 @@ def getTeamHeadline(teamInfoDict):
         if badlyDoneTeams[i]==teamInfoDict["abbreviation"]:
             return fixedTeams[i]
     return teamInfoDict['shortName'] + " " + teamInfoDict["teamName"].upper()
+#function to make names fit in boxes
+def textShrinker(initialN, text, width, coordX, coordY):
+    textsize = myFont(initialN).getlength(text)
+    while textsize>width:
+        initialN = initialN-1
+        textsize = myFont(initialN).getlength(text)
+    d.text((coordX, coordY), text, fill=(0,0,0), font = myFont(initialN))
 
 #dealing with page 1
 img = Image.open('carp2023_1.png') #opening the blank scorecard
@@ -80,9 +87,11 @@ d = ImageDraw.Draw(img) #overlay with the text
 def myFont(n):
     return ImageFont.truetype("tramsscript.ttf",n)
 
+
 #getting the SP's name in a #. Name SURNAME FORMAT...
 homesptext = homeDict['players']['ID'+str(homeStartingPitcher)]['jerseyNumber']+". "+formatNames(homeDict['players']['ID'+str(homeStartingPitcher)]['person']['fullName'])
-d.text((795,2775),homesptext, fill=(0,0,0), font = myFont(40)) #... and putting it in its place
+textShrinker(40,homesptext,389,795,2775)
+
 
 #getting bullpen names and putting them in their place, same for the batting order and bench
 i=0 
@@ -94,7 +103,7 @@ for id in homeBullpen:
     except:
         print(formatNames(namestr), "missing from home bullpen") #if the data isn't complete (f.e. no jersey number), the script outputs the details of the missing player, run with 661672 to test out (as of 03.01.2023) 
         finalstr=""
-    d.text((158,2557+i), finalstr, fill=(0,0,0), font=myFont(40) )
+    textShrinker(40,finalstr,632,158,2557+i)
     i=i+50
 i=0
 for id in awayBattingOrder:
@@ -106,7 +115,7 @@ for id in awayBattingOrder:
     except:
         print(formatNames(namestr), "missing from away batting order")
         finalstr=""
-    d.text((160,1224+i),finalstr, fill=(0,0,0),font=myFont(42))
+    textShrinker(42,finalstr,632,160,1224+i)
     i=i+142
 i=0
 for id in awayBench:
@@ -117,7 +126,7 @@ for id in awayBench:
     except:
         print(formatNames(namestr), "missing from away bench")
         finalstr=""
-    d.text((1931,2775+i),finalstr, fill=(0,0,0),font=myFont(40))
+    textShrinker(40,finalstr,404,1931,2775+i)
     i=i+50 
 #getting surnames on the fielding chart
 for id in homeBattingOrder:    
@@ -169,10 +178,10 @@ for x in dic["gameBoxInfo"]:
                 umps.append(z)
     elif x["label"] == "Venue":
         venuestring=x["value"]
-d.text((769,1020),weatherstring,fill=(0,0,0),font=myFont(32))
+        
+textShrinker(32,weatherstring,405,769,1020)
 datestr = dic["gameBoxInfo"][len(dic['gameBoxInfo'])-1]["label"]
 d.text((611,884),datestr, fill=(0,0,0),font=myFont(35))
-
 d.text((300,2508),dic["teamInfo"]["home"]["abbreviation"],fill=(0,0,0),font=myFont(40)) #abbreviations on the headlines (near the BENCH and BULLPEN etc)
 d.text((845,2717),dic["teamInfo"]["home"]["abbreviation"],fill=(0,0,0),font=myFont(40))
 d.text((1980,2719),dic["teamInfo"]["away"]["abbreviation"],fill=(0,0,0),font=myFont(40))
@@ -184,7 +193,7 @@ img = Image.open('carp2023_2.png')
 d = ImageDraw.Draw(img)
 #pretty much same thing like above
 awaysptext = awayDict['players']['ID'+str(awayStartingPitcher)]['jerseyNumber']+". "+formatNames(awayDict['players']['ID'+str(awayStartingPitcher)]['person']['fullName'])
-d.text((795,2775),awaysptext, fill=(0,0,0), font = myFont(40))
+textShrinker(40,awaysptext,389,795,2775)
 i=0
 for id in awayBullpen:
     try:
@@ -194,7 +203,7 @@ for id in awayBullpen:
     except:
         print(formatNames(namestr), "missing from away bullpen")
         finalstr=""
-    d.text((158,2557+i), finalstr, fill=(0,0,0), font=myFont(40) )
+    textShrinker(40,finalstr,632,158,2557+i)
     i=i+50
 i=0
 for id in homeBattingOrder:
@@ -206,7 +215,7 @@ for id in homeBattingOrder:
     except:
         print(formatNames(namestr), "missing from home batting order")
         finalstr=""
-    d.text((160,1224+i),finalstr, fill=(0,0,0),font=ImageFont.truetype("tramsscript.ttf",42))
+    textShrinker(42,finalstr,632,160,1224+i)
     i=i+142
 i=0
 for id in homeBench:
@@ -217,7 +226,7 @@ for id in homeBench:
     except:
         print(formatNames(namestr), "missing from home bench")
         finalstr=""
-    d.text((1931,2775+i),finalstr, fill=(0,0,0),font=ImageFont.truetype("tramsscript.ttf",40))
+    textShrinker(40,finalstr,404,1931,2775+i)
     i=i+50 
 for id in awayBattingOrder:    
     try:
@@ -260,9 +269,9 @@ for ump in umps:
     if ump[0].lstrip() == "2B":
         d.text((1977-(textsize/2),213), namestr,align='center',font=myFont(40), fill=(0,0,0))
     if ump[0].lstrip() == "3B":
-        d.text((1607,300), namestr,font=myFont(40), fill=(0,0,0))
+        textShrinker(40,namestr,303,1600,300)
     if ump[0].lstrip() == "1B":
-        d.text((2042,300), namestr,font=myFont(40), fill=(0,0,0))
+        textShrinker(40,namestr,282,2042,300)
 #stadium
 d.text((1737,124),venuestring,font=myFont(40), fill=(0,0,0))
 img.save('carptest2.png')
